@@ -26,7 +26,7 @@ if __name__ == '__main__':
     x_train = pad_sequences(x_train, maxlen=maxlen)
     x_test = pad_sequences(x_test, maxlen=maxlen)
     # Khởi tạo TransformerPack
-    transformer = encoder.TransformerPack(
+    transformer = encoder.TransformerEncoderPack(
         num_encoder_layers=num_encoder_layers,
         d_model=d_model,
         num_heads=num_heads,

@@ -34,10 +34,10 @@ class EncoderLayer(tf.keras.layers.Layer):
         return out2
 
 
-class TransformerPack(Model):
+class TransformerEncoderPack(Model):
     def __init__(self, num_encoder_layers, d_model, num_heads, dff, input_vocab_size, maximum_position_encoding, rate=0.1):
-        super(TransformerPack, self).__init__()
-        # Lập trình tại đây
+        super(TransformerEncoderPack, self).__init__()
+        # Khai báo các lớp cần sử dụng
         self.embedding = Embedding(
             input_vocab_size, d_model)  # input_length=maximum_position_encoding
         self.pos_encoding = pe.positional_encoding(

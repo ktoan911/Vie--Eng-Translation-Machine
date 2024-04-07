@@ -8,7 +8,7 @@ def positional_encoding(position, d_model):
         angle_rates = 1 / np.power(10000, (2 * (i // 2)) / np.float32(d_model))
         return pos * angle_rates
 
-    # Lập trình tại đây
+    # Tạo ma trận vị trí (position, d_model)
     angle_rads = get_angles(np.arange(position)[:, np.newaxis],
                             np.arange(d_model)[np.newaxis, :],
                             d_model)

@@ -30,11 +30,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         return tf.transpose(x, perm=[0, 2, 1, 3])
 
     def __call__(self, v, k, q, mask):
+        # Chia ma trận Q, K, V thành các phần nhỏ cho multi-head attention
         batch_size = tf.shape(q)[0]
         v = self.split_heads(self.wv(v), batch_size)
         k = self.split_heads(self.wk(k), batch_size)
         q = self.split_heads(self.wq(q), batch_size)
 
+        # self-attention
         output = scaled_dot_product_attention(q, k, v, mask)  # (1,8,60,16)
         # Xếp lại chiều của ma trận sao cho đúng định dạng ban đầu
         output = tf.reshape(tf.transpose(
