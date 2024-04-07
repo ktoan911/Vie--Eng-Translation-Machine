@@ -15,7 +15,7 @@ def point_wise_feed_forward_network(d_model, dff):
 class EncoderLayer(tf.keras.layers.Layer):
     def __init__(self, d_model, num_heads, dff, rate=0.1):
         super(EncoderLayer, self).__init__()
-        # Lập trình tại đây
+        
         self.mha = mha.MultiHeadAttention(d_model, num_heads)
         self.ffn = point_wise_feed_forward_network(d_model, dff)
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
