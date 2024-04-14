@@ -1,48 +1,59 @@
-from keras.datasets import imdb
 from keras.losses import BinaryCrossentropy
 from keras.metrics import BinaryAccuracy
 from keras.optimizers import Adam
-from keras.preprocessing.sequence import pad_sequences
-from keras.layers import GlobalAveragePooling1D, Dense
-from keras.models import Sequential
 import Transformer_Encoder.encoder as encoder
 import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+from argparse import ArgumentParser
+import data
 
 if __name__ == '__main__':
-    # Tham số
-    vocab_size = 10000
-    maxlen = 200
-    embedding_dim = 32
-    num_heads = 2
-    d_model = 128
-    dff = 512
-    num_encoder_layers = 2
-    batch_size = 32
-    num_epochs = 10
+    parser = ArgumentParser()
+
+    # Khai báo tham số cần thiết
+    parser.add_argument("--vocab-size", default=10000, type=int)
+    parser.add_argument("--max-length-input", default=200, type=int)
+    parser.add_argument("--embedding-dim", default=64, type=int)
+    parser.add_argument("--num-heads-attention", default=2, type=int)
+    parser.add_argument("--dff", default=512, type=int)
+    parser.add_argument("--num-encoder-layers", default=2, type=int)
+    parser.add_argument("--d-model", default=128, type=int)
+    parser.add_argument("--batch-size", default=64, type=int)
+    parser.add_argument("--epochs", default=1000, type=int)
+
+    home_dir = os.getcwd()
+    args = parser.parse_args()
+
+    # Hiển thị thông tin training
+    print('---------------------Welcome to ProtonX Transformer Encoder-------------------')
+    print('Github: ktoan911')
+    print('Email: khanhtoan.forwork@gmail.com')
+    print('---------------------------------------------------------------------')
+    print('Training Transformer Classifier model with hyper-params:')
+    print('===========================')
+
+    for arg, value in vars(args).items():
+        print(f"{arg}: {value}")
 
     # Load and preprocess the IMDB dataset
-    (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=vocab_size)
-    x_train = pad_sequences(x_train, maxlen=maxlen)
-    x_test = pad_sequences(x_test, maxlen=maxlen)
+    (x_train, y_train), (x_test, y_test) = data.get_preprocessed_data(
+        args.vocab_size, args.max_length_input)
+
     # Khởi tạo TransformerPack
     transformer = encoder.TransformerEncoderPack(
-        num_encoder_layers=num_encoder_layers,
-        d_model=d_model,
-        num_heads=num_heads,
-        dff=dff,
-        input_vocab_size=vocab_size,
-        maximum_position_encoding=maxlen)
+        num_encoder_layers=args.num_encoder_layers,
+        d_model=args.d_model,
+        num_heads=args.num_heads_attention,
+        dff=args.dff,
+        input_vocab_size=args.vocab_size,
+        maximum_position_encoding=args.max_length_input)
 
     transformer.compile(optimizer=Adam(), loss=BinaryCrossentropy(),
                         metrics=[BinaryAccuracy()])
 
     # Train the model
-    transformer.fit(x_train, y_train, batch_size=batch_size,
+    transformer.fit(x_train, y_train, batch_size=args.batch_size,
                     epochs=3, validation_data=(x_test, y_test))
 
     # Evaluate the model
     test_loss, test_acc = transformer.evaluate(x_test, y_test)
     print(f'Test Loss: {test_loss}, Test Accuracy: {test_acc}')
-
-    # In ra kiến trúc của mod

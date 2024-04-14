@@ -15,7 +15,7 @@ def point_wise_feed_forward_network(d_model, dff):
 class EncoderLayer(tf.keras.layers.Layer):
     def __init__(self, d_model, num_heads, dff, rate=0.1):
         super(EncoderLayer, self).__init__()
-        
+
         self.mha = mha.MultiHeadAttention(d_model, num_heads)
         self.ffn = point_wise_feed_forward_network(d_model, dff)
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
@@ -45,8 +45,8 @@ class TransformerEncoderPack(Model):
         self.enc_layers = [EncoderLayer(
             d_model, num_heads, dff, rate) for i in range(num_encoder_layers)]
         self.dropout = Dropout(rate)
-        # self.globalaveragepooling1d = GlobalAveragePooling1D()
-        # self.dense = Dense(1, activation='sigmoid')
+        self.globalaveragepooling1d = GlobalAveragePooling1D()
+        self.dense = Dense(1, activation='sigmoid')
 
     def __call__(self, x, training=True):
         seq_len = tf.shape(x)[1]
@@ -55,6 +55,6 @@ class TransformerEncoderPack(Model):
         x = self.dropout(x, training=training)
         for layer in self.enc_layers:
             x = layer(x, training=training, mask=None)
-        # x = self.globalaveragepooling1d(x)
-        # x = self.dense(x)
+        x = self.globalaveragepooling1d(x)
+        x = self.dense(x)
         return x
