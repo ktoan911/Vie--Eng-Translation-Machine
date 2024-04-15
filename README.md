@@ -1,5 +1,4 @@
-# Translation_Machine# Project Name <--- FIXME
-
+# Vie -Eng Translation Machine
 Authors:
 - Github: [ktoan911](https://github.com/ktoan911) 
 - Email: khanhtoan.forwork@gmail.com 
@@ -11,7 +10,7 @@ Advisors:
 
 
 Implementation of [Attention Is All You Need](https://arxiv.org/pdf/1706.03762.pdf) . This
-library is part of our project: Building an Machine Translation Model library with ProtonX.
+library is part of our project: Building an Translation Machine Model library with ProtonX.
 
 <p align="center">
     <img src='https://storage.googleapis.com/protonx-cloud-storage/transformer/protonx-transf.png' width=200 class="center">
@@ -78,7 +77,7 @@ Example:
 
 ```python
 
-!python train.py --vocab-size 10000 --max-length-input 200 --embedding-dim 32 --num-heads-attention 3 --dff 512 --num-encoder-layers 6 --d-model 128 --batch-size 32 --epochs 10 --learning-rate 0.01 --dropout-rate 0.1
+python train.py --vocab-size 10000 --max-length-input 200 --embedding-dim 32 --num-heads-attention 2 --dff 512 --num-encoder-layers 6 --d-model 128 --batch-size 32 --epochs 10 --learning-rate 0.01 --dropout-rate 0.1
 
 ``` 
 **FIXME**
