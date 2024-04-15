@@ -1,73 +1,84 @@
 # Translation_Machine# Project Name <--- FIXME
 
-![image](assest/transformer_logo.pngtrain.png)
+Authors:
+- Github: [ktoan911](https://github.com/ktoan911) 
+- Email: khanhtoan.forwork@gmail.com 
+
+Advisors:
+- Github: [bangoc123](https://github.com/bangoc123) 
+- Email: protonxai@gmail.com
 
 
-Implementation of [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/pdf/1409.3215.pdf). This
-library is part of our project: Building an AI library with ProtonX.
+
+Implementation of [Attention Is All You Need](https://arxiv.org/pdf/1706.03762.pdf) . This
+library is part of our project: Building an Machine Translation Model library with ProtonX.
 
 <p align="center">
     <img src='https://storage.googleapis.com/protonx-cloud-storage/transformer/protonx-transf.png' width=200 class="center">
 </p>
 
-Description about your project. Why do you choose to build this?  <--- **FIXME**
+This project is a Vietnamese - English translation machine using a Transformer model. It aims to provide accurate translations, bridging language barriers and meeting the demand for efficient translation tools.
 
 Slide about your project (if it's available) <--- **FIXME**
 
-Architecture Image <--- **FIXME**
+## Architecture Image 
 
+![image](assets/model_architect.png)
 
-Authors:
-- Github: members github name <--- **FIXME**
-- Email: members emails <--- **FIXME**
-
-Advisors:
-- Github: advisor github name <--- **FIXME**
-- Email: advisor emails <--- **FIXME**
 
 ## I.  Set up environment
-- Step 1: <--- **FIXME**
+- Step 1: create a Conda environment named your_env_name with Python version 3.11.5
 
 ```python
-conda env create -f environment.yml
+conda create -n ${your_env_name} python=3.11.5
 ```
 
-- Step 2: <--- **FIXME**
+- Step 2: Activate the newly created environment using the following command
+```
+conda activate ${your_env_name}
 ```
 
-```
-
-- Step 3: <--- **FIXME**
+- Step 3: Install Packages from requirements.txt
 
 ```
-
+pip install -r requirements.txt
 ``` 
 
 ## II.  Set up your dataset
 
-- Guide user how to download your data and set the data pipeline <--- **FIXME**
+-  
+<--- **FIXME**
 - References: [NLP](https://github.com/bangoc123/transformer) and [CV](https://github.com/bangoc123/mlp-mixer)
 
 ## III. Training Process
 
+There are some important arguments for the script you should consider when running it:
 
-**FIXME**
+- `vocab-size`
+- `max-length-input`
+- `embedding-dim`
+- `num-heads-attention`: [3.2.2](https://arxiv.org/pdf/1706.03762.pdf)
+- `dff`: [3.3](https://arxiv.org/pdf/1706.03762.pdf)
+- `num-encoder_layers` : [3.1](https://arxiv.org/pdf/1706.03762.pdf)
+- `d-model`: [3.2.2](https://arxiv.org/pdf/1706.03762.pdf)
+- `batch-size`
+- `epochs` 
+- `dropout-rate`
 
 Training script:
 
 
 ```python
 
-python train.py --epochs ${epochs} --input-lang en --target-lang vi --input-path ${path_to_en_text_file} --target-path ${path_to_vi_text_file}
+python train.py --vocab-size ${vocab-size} --max-length-input ${max-length-input} --embedding-dim ${embedding-dim} --num-heads-attention ${num-heads-attention} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs} --learning-rate ${learning-rate} --dropout-rate ${dropout-rate}
 
 ```
-**FIXME**
 
 Example:
 
 ```python
 
-!python train.py --train-folder ${train_folder} --valid-folder ${valid_folder} --num-classes 2 --patch-size 5 --image-size 150 --lr 0.0001 --epochs 200 --num-heads 12 
+!python train.py --vocab-size 10000 --max-length-input 200 --embedding-dim 32 --num-heads-attention 3 --dff 512 --num-encoder-layers 6 --d-model 128 --batch-size 32 --epochs 10 --learning-rate 0.01 --dropout-rate 0.1
 
 ``` 
 **FIXME**

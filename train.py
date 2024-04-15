@@ -18,7 +18,9 @@ if __name__ == '__main__':
     parser.add_argument("--num-encoder-layers", default=2, type=int)
     parser.add_argument("--d-model", default=128, type=int)
     parser.add_argument("--batch-size", default=64, type=int)
+    parser.add_argument("--learning-rate", default=0.01, type=float)
     parser.add_argument("--epochs", default=1000, type=int)
+    parser.add_argument("--dropout-rate", default=0.1, type=float)
 
     home_dir = os.getcwd()
     args = parser.parse_args()
@@ -45,14 +47,15 @@ if __name__ == '__main__':
         num_heads=args.num_heads_attention,
         dff=args.dff,
         input_vocab_size=args.vocab_size,
-        maximum_position_encoding=args.max_length_input)
+        maximum_position_encoding=args.max_length_input,
+        rate=args.dropout_rate)
 
-    transformer.compile(optimizer=Adam(), loss=BinaryCrossentropy(),
+    transformer.compile(optimizer=Adam(learning_rate=args.learning_rate), loss=BinaryCrossentropy(),
                         metrics=[BinaryAccuracy()])
 
     # Train the model
     transformer.fit(x_train, y_train, batch_size=args.batch_size,
-                    epochs=3, validation_data=(x_test, y_test))
+                    epochs=args.epochs, validation_data=(x_test, y_test))
 
     # Evaluate the model
     test_loss, test_acc = transformer.evaluate(x_test, y_test)
