@@ -45,8 +45,10 @@ pip install -r requirements.txt
 
 ## II.  Set up your dataset
 
--  
-<--- **FIXME**
+This project utilized IMDB Tensoflow Dataset
+```
+   (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=vocab_size)
+```
 - References: [NLP](https://github.com/bangoc123/transformer) and [CV](https://github.com/bangoc123/mlp-mixer)
 
 ## III. Training Process
@@ -96,19 +98,15 @@ python predict.py --test-data ${link_to_test_data}
 
 ## V. Result and Comparision
 
-**FIXME**
-
-Your implementation
+Transformer Encoder model
 ```
-Epoch 7/10
-782/782 [==============================] - 261s 334ms/step - loss: 0.8315 - acc: 0.8565 - val_loss: 0.8357 - val_acc: 0.7978
-Epoch 8/10
-782/782 [==============================] - 261s 334ms/step - loss: 0.3182 - acc: 0.8930 - val_loss: 0.6161 - val_acc: 0.8047
-Epoch 9/10
-782/782 [==============================] - 261s 333ms/step - loss: 1.1965 - acc: 0.8946 - val_loss: 3.9842 - val_acc: 0.7855
-Epoch 10/10
-782/782 [==============================] - 261s 333ms/step - loss: 0.4717 - acc: 0.8878 - val_loss: 0.4894 - val_acc: 0.8262
-
+Epoch 1/3
+782/782 [==============================] - 57s 63ms/step - loss: 0.5410 - binary_accuracy: 0.6794 - val_loss: 0.3047 - val_binary_accuracy: 0.8703
+Epoch 2/3
+782/782 [==============================] - 26s 34ms/step - loss: 0.2614 - binary_accuracy: 0.8930 - val_loss: 0.2786 - val_binary_accuracy: 0.8819
+Epoch 3/3
+782/782 [==============================] - 29s 37ms/step - loss: 0.2004 - binary_accuracy: 0.9204 - val_loss: 0.3002 - val_binary_accuracy: 0.8784
+  1/782 [..............................] - ETA: 23s - loss: 0.2095 - binary_accuracy: 0.9062
 ```
 
 **FIXME**
@@ -124,7 +122,8 @@ Epoch 8/10
 391/391 [==============================] - 115s 293ms/step - loss: 0.1441 - acc: 0.9513 - val_loss: 0.5811 - val_acc: 0.7875
 ```
 
-Your comments about these results <--- **FIXME**
+
+The model's performance improves significantly over three epochs, with loss decreasing and accuracy increasing. 
 
 
 ## VI. Running Test
