@@ -1,6 +1,6 @@
 # Translation_Machine# Project Name <--- FIXME
 
-![image](assest/transformer_logo.pngtrain.png)
+![image]([assest/transformer_logo.pngtrain.png](https://github.com/ktoan911/Translation_Machine/blob/main/assest/transformer_logo.png))
 
 
 Implementation of [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/pdf/1409.3215.pdf). This
