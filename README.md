@@ -71,7 +71,7 @@ Training script:
 
 ```python
 
-python train.py --vocab-size ${vocab-size} --max-length-input ${max-length-input} --embedding-dim ${embedding-dim} --num-heads-attention ${num-heads-attention} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs} --learning-rate ${learning-rate} --dropout-rate ${dropout-rate}
+python train.py --vocab-size ${vocab-size} --embedding-dim ${embedding-dim} --num-heads-attention ${num-heads-attention} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs} --learning-rate ${learning-rate} --dropout-rate ${dropout-rate} --path ${path-to-save-model}
 
 ```
 
@@ -79,7 +79,7 @@ Example:
 
 ```python
 
-python train.py --vocab-size 10000 --max-length-input 200 --embedding-dim 32 --num-heads-attention 2 --dff 512 --num-encoder-layers 6 --d-model 128 --batch-size 32 --epochs 10 --learning-rate 0.01 --dropout-rate 0.1
+python train.py --vocab-size 10000 --embedding-dim 32 --num-heads-attention 2 --dff 512 --num-encoder-layers 6 --d-model 128 --batch-size 32 --epochs 10 --learning-rate 0.1 --dropout-rate 0.1 --model 'model'
 
 ``` 
 **FIXME**
@@ -93,7 +93,7 @@ There are some important arguments for the script you should consider when runni
 ## IV. Predict Process
 
 ```bash
-python predict.py --test-data ${link_to_test_data}
+python predict.py --path-model ${model-path} --test-data ${link_to_test_data}
 ```
 
 ## V. Result and Comparision

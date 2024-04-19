@@ -20,6 +20,7 @@ if __name__ == '__main__':
     parser.add_argument("--learning-rate", default=0.1, type=float)
     parser.add_argument("--epochs", default=1000, type=int)
     parser.add_argument("--dropout-rate", default=0.1, type=float)
+    parser.add_argument("--path", required=True, type=str)
 
     home_dir = os.getcwd()
     args = parser.parse_args()
@@ -72,7 +73,7 @@ if __name__ == '__main__':
     print('Training finished!')
     print('============================================')
 
-    transformer_encoder.save('model', save_format="tf")
+    transformer_encoder.save(args.path, save_format="tf")
 
     # Evaluate the model
     test_loss, test_acc = transformer_encoder.evaluate(x_test, y_test)
