@@ -1,5 +1,4 @@
 import tensorflow as tf
-from keras.layers import Dense
 
 
 def scaled_dot_product_attention(q, k, v, mask):
@@ -8,7 +7,7 @@ def scaled_dot_product_attention(q, k, v, mask):
            [-1], dtype=tf.float32))) * tf.matmul(q, k, transpose_b=True)
     # print("shape qkv", QKV.shape)
     if mask is not None:
-        QKV += (mask * -1e30)
+        QKV += (mask * -1e9)
     output = tf.matmul(tf.nn.softmax(QKV, axis=-1), v)
     return output
 
@@ -20,10 +19,10 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         self.d_model = d_model
         assert d_model % self.num_heads == 0
         self.depth = d_model // num_heads
-        self.wq = Dense(d_model)
-        self.wk = Dense(d_model)
-        self.wv = Dense(d_model)
-        self.dense = Dense(d_model)
+        self.wq = tf.keras.layers.Dense(d_model)
+        self.wk = tf.keras.layers.Dense(d_model)
+        self.wv = tf.keras.layers.Dense(d_model)
+        self.dense = tf.keras.layers.Dense(d_model)
 
     def split_heads(self, x, batch_size):
         x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))

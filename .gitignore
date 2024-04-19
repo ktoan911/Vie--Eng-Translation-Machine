@@ -1,0 +1,10 @@
+# IDE-specific files
+.idea/
+.vscode/
+
+# Byte-compiled / optimized files
+*/__pycache__/
+
+# Distribution / packaging
+test.py
+predict.txt

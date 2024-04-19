@@ -4,11 +4,10 @@ import tensorflow as tf
 
 def positional_encoding(position, d_model):
     def get_angles(pos, i, d_model):
-        # sinusoidal function
         angle_rates = 1 / np.power(10000, (2 * (i // 2)) / np.float32(d_model))
         return pos * angle_rates
 
-    # Tạo ma trận vị trí (position, d_model)
+    # Lập trình tại đây
     angle_rads = get_angles(np.arange(position)[:, np.newaxis],
                             np.arange(d_model)[np.newaxis, :],
                             d_model)
