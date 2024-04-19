@@ -26,10 +26,10 @@ Slide about your project (if it's available) <--- **FIXME**
 
 
 ## I.  Set up environment
-- Step 1: create a Conda environment named your_env_name with Python version 3.11.5
+- Step 1: create a Conda environment named your_env_name with Python version  3.10.14
 
 ```python
-conda create -n ${your_env_name} python=3.11.5
+conda create -n ${your_env_name} python= 3.10.14
 ```
 
 - Step 2: Activate the newly created environment using the following command
