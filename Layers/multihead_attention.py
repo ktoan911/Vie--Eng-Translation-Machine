@@ -7,7 +7,7 @@ def scaled_dot_product_attention(q, k, v, mask):
            [-1], dtype=tf.float32))) * tf.matmul(q, k, transpose_b=True)
     # print("shape qkv", QKV.shape)
     if mask is not None:
-        QKV += (mask * -1e9)
+        QKV += (mask * -1e30)
     output = tf.matmul(tf.nn.softmax(QKV, axis=-1), v)
     return output
 

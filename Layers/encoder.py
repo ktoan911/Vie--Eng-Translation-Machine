@@ -1,6 +1,6 @@
 import tensorflow as tf
-from Transformer_Encoder import positioncal_encoding as pe
-from Transformer_Encoder import multihead_attention as mha
+import positioncal_encoding as pe
+import multihead_attention as mha
 from keras import Model
 
 
@@ -22,18 +22,18 @@ class EncoderLayer(tf.keras.layers.Layer):
         self.dropout1 = tf.keras.layers.Dropout(rate)
         self.dropout2 = tf.keras.layers.Dropout(rate)
 
-    def __call__(self, x, training, mask):
+    def __call__(self, x, training, mask=None):
         inp1 = self.mha(x, x, x, mask=mask)
         out1 = self.dropout1(inp1, training=training)
         out1 = self.layernorm1(out1 + x)
 
         inp2 = self.ffn(out1)
         out2 = self.dropout2(inp2, training=training)
-        out2 = self.layernorm2(out2 + x)
+        out2 = self.layernorm2(out2 + out1)
         return out2
 
 
-class TransformerEncoderPack(tf.keras.Model):
+class TransformerEncoderPack(tf.keras.layers.Layer):
     def __init__(self, num_encoder_layers, d_model, num_heads, dff, input_vocab_size, maximum_position_encoding, rate=0.1):
         super(TransformerEncoderPack, self).__init__()
         # Lập trình tại đây
@@ -47,13 +47,12 @@ class TransformerEncoderPack(tf.keras.Model):
         self.global_average_pooling = tf.keras.layers.GlobalAveragePooling1D()
         self.final_layer = tf.keras.layers.Dense(1, activation="sigmoid")
 
-    def call(self, x, training):
+    def call(self, x, training, mask=None):
         x = self.embedding(x)
         # print(tf.shape(x))
         x = x + self.pos_encoding[:, :tf.shape(x)[1], :]
-        for _ in range(self.num_encoder_layers):
-            x = self.enc_layers(x, training=training, mask=None)
         x = self.dropout(x, training=training)
-        x = self.global_average_pooling(x)
-        output = self.final_layer(x)
-        return output
+        for _ in range(self.num_encoder_layers):
+            x = self.enc_layers(x, training=training, mask=mask)
+
+        return x

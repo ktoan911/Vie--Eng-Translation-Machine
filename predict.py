@@ -9,9 +9,9 @@ if __name__ == '__main__':
     parser = ArgumentParser()
 
     # Khai báo tham số cần thiết
-    parser.add_argument("--path-model", required=True, type=str)
+    parser.add_argument("--path-model", default='model', type=str)
     parser.add_argument("--test-data", default=10000, type=str)
-
+    parser.add_argument("--max-length", default=200, type=int)
     home_dir = os.getcwd()
     args = parser.parse_args()
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
             lines_predict.append(line.strip())
 
     lines_predict_preprocessed = data.predict_data_preprocessing(
-        lines_predict, 200)
+        lines_predict, args.max_length)
     model_pretrained = tf.keras.models.load_model('args.path_model')
     prediction = model_pretrained.predict(np.array(lines_predict_preprocessed))
 
