@@ -4,7 +4,8 @@
 
 # Byte-compiled / optimized files
 */__pycache__/
-
+__pycache__
 # Distribution / packaging
 test.py
 predict.txt
+tempCodeRunnerFile.py
