@@ -1,7 +1,7 @@
 import tensorflow as tf
-import positioncal_encoding as pe
-import multihead_attention as mha
-import encoder as enc
+import Layers.position_encoding as pe
+import Layers.multihead_attention as mha
+import Layers.encoder as enc
 
 
 class DecoderLayer(tf.keras.layers.Layer):
@@ -43,7 +43,7 @@ class DecoderPack(tf.keras.layers.Layer):
             maximum_position_encoding, d_model)
         self.dec_layer = DecoderLayer(d_model, num_heads, dff, rate)
         self.dropout = tf.keras.layers.Dropout(rate)
-        self.final_layer = tf.keras.dense(
+        self.final_layer = tf.keras.layers.Dense(
             target_vocab_size, activation="softmax")
 
     def call(self, x, enc_output, training, look_ahead_mask, padding_mask):

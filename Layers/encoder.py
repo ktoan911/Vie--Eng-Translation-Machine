@@ -1,7 +1,6 @@
 import tensorflow as tf
-import positioncal_encoding as pe
-import multihead_attention as mha
-from keras import Model
+import Layers.position_encoding as pe
+import Layers.multihead_attention as mha
 
 
 def point_wise_feed_forward_network(d_model, dff):
@@ -33,9 +32,9 @@ class EncoderLayer(tf.keras.layers.Layer):
         return out2
 
 
-class TransformerEncoderPack(tf.keras.layers.Layer):
+class EncoderPack(tf.keras.layers.Layer):
     def __init__(self, num_encoder_layers, d_model, num_heads, dff, input_vocab_size, maximum_position_encoding, rate=0.1):
-        super(TransformerEncoderPack, self).__init__()
+        super(EncoderPack, self).__init__()
         # Lập trình tại đây
         self.num_encoder_layers = num_encoder_layers
         self.embedding = tf.keras.layers.Embedding(

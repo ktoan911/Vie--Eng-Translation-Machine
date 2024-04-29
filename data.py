@@ -7,8 +7,8 @@ import underthesea
 class Data:
     def __init__(self, train_path, val_path, test_path):
         self.train_dataset = pd.read_csv(train_path, encoding='utf-8')
-        self.val_datatset = pd.read_csv(val_path, encoding='utf-8')
-        self.test_datatset = pd.read_csv(test_path, encoding='utf-8')
+        self.val_dataset = pd.read_csv(val_path, encoding='utf-8')
+        self.test_dataset = pd.read_csv(test_path, encoding='utf-8')
 
     # split dataset
 
@@ -59,9 +59,9 @@ class Data:
     def data_process(self, max_input_length, max_target_length, batch_size=32):
         train_dataset_inptensor, train_datasetout_tensor, input_tokenizer, target_tokenizer = self.preprocess(
             self.train_dataset, max_input_length, max_target_length)
-        val_dataset_inptensor, val_datasetout_tensor, _, _ = self.preprocess(self.val_datatset,
+        val_dataset_inptensor, val_datasetout_tensor, _, _ = self.preprocess(self.val_dataset,
                                                                              max_input_length, max_target_length, tokenizer_en=input_tokenizer, tokenizer_vi=target_tokenizer)
-        test_dataset_inptensor, test_datasetout_tensor, _, _ = self.preprocess(self.test_datatset,
+        test_dataset_inptensor, test_datasetout_tensor, _, _ = self.preprocess(self.test_dataset,
                                                                                max_input_length, max_target_length, tokenizer_en=input_tokenizer, tokenizer_vi=target_tokenizer)
         train_dataset = self.convert_tfdataset(
             train_dataset_inptensor, train_datasetout_tensor, batch_size)
