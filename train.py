@@ -17,8 +17,8 @@ if __name__ == '__main__':
     parser.add_argument("--dff", default=512, type=int)
     parser.add_argument("--num-layers", default=2, type=int)
     parser.add_argument("--d-model", default=128, type=int)
-    parser.add_argument("--batch-size", default=32, type=int)
-    parser.add_argument("--epochs", default=1000, type=int)
+    parser.add_argument("--batch-size", default=4, type=int)
+    parser.add_argument("--epochs", default=10, type=int)
     parser.add_argument("--dropout-rate", default=0.1, type=float)
     parser.add_argument("--path-train", required=True, type=str)
     parser.add_argument("--path-valid", required=True, type=str)
@@ -42,12 +42,17 @@ if __name__ == '__main__':
     print('====================================')
 
     # Load data
+    print('=============Data Processing Progress================')
+    print('----------------Begin--------------------')
+    print('Loading data ......')
     dataset = data.Data(args.path_train, args.path_valid, args.path_test)
 
     train_dataset, val_dataset, test_dataset, input_tokenizer, target_tokenizer = dataset.data_process(max_input_length=args.max_length_input,
                                                                                                        max_target_length=args.max_length_target,
                                                                                                        batch_size=args.batch_size)
 
+    print('Suscessfully processed data !')
+    print('----------------------------------------')
     # Training model
 
     transformer_model = model.Transformer(num_layers=args.num_layers, num_heads=args.num_heads_attention, dff=args.dff, input_vocab_size=len(input_tokenizer.word_index)+1,

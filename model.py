@@ -5,22 +5,24 @@ import Layers.generator_mask as gm
 
 
 class Transformer(tf.keras.Model):
-    def __init__(self, num_layers, num_heads, dff, input_vocab_size, target_vocab_size, pe_input, pe_target, enc_padding_mask, look_ahead_mask, dec_padding_mask, rate=0.1):
+    def __init__(self, num_layers, num_heads, dff, input_vocab_size, target_vocab_size, pe_input, pe_target, rate=0.1):
         super(Transformer, self).__init__()
         self.encoder = encoder.EncoderPack(
             num_layers, dff, num_heads, input_vocab_size, pe_input, rate)
         self.decoder = decoder.DecoderPack(
             num_layers, dff, num_heads, target_vocab_size, pe_target, rate)
-        self.enc_padding_mask = enc_padding_mask
-        self.look_ahead_mask = look_ahead_mask
-        self.dec_padding_mask = dec_padding_mask
+        self.final_layer = tf.keras.layers.Dense(
+            target_vocab_size)
 
-    def call(self, x, training):
-        inp, tar = x
-        enc_output = self.encoder(inp, training, self.enc_padding_mask)
+    def call(self, inputs, training=True):
+        inp, out = inputs
+        encoder_padding_mask, decoder_look_ahead_mask, decoder_padding_mask = gm.generate_mask(
+            inp, out)
+        enc_output = self.encoder(inp, training, encoder_padding_mask)
         dec_output = self.decoder(
-            tar, enc_output, training, self.look_ahead_mask, self.dec_padding_mask)
-        return dec_output
+            out, enc_output, training, decoder_look_ahead_mask, decoder_padding_mask)
+        output = self.final_layer(dec_output)
+        return output
 
 
 class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):

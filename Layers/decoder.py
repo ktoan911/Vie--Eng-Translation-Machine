@@ -43,8 +43,6 @@ class DecoderPack(tf.keras.layers.Layer):
             maximum_position_encoding, d_model)
         self.dec_layer = DecoderLayer(d_model, num_heads, dff, rate)
         self.dropout = tf.keras.layers.Dropout(rate)
-        self.final_layer = tf.keras.layers.Dense(
-            target_vocab_size, activation="softmax")
 
     def call(self, x, enc_output, training, look_ahead_mask, padding_mask):
         x = self.embedding(x)
@@ -53,6 +51,5 @@ class DecoderPack(tf.keras.layers.Layer):
         for _ in range(self.num_decoder_layers):
             x = self.dec_layer(x, enc_output, training,
                                padding_mask, look_ahead_mask)
-        output = self.final_layer(x)
 
-        return output
+        return x

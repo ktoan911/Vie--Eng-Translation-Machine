@@ -2,6 +2,7 @@ import tensorflow as tf
 import pandas as pd
 from datasets import load_dataset
 import underthesea
+import re
 
 
 class Data:
@@ -9,8 +10,6 @@ class Data:
         self.train_dataset = pd.read_csv(train_path, encoding='utf-8')
         self.val_dataset = pd.read_csv(val_path, encoding='utf-8')
         self.test_dataset = pd.read_csv(test_path, encoding='utf-8')
-
-    # split dataset
 
     def tokenizer(self, dataset, language='en', tokenizer_en=None, tokenizer_vi=None):
         if language == "vi":
@@ -26,11 +25,22 @@ class Data:
         tensor = tokenizer.texts_to_sequences(dataset)
         return tensor, tokenizer
 
+    def preprocess_sentence(self, sentence):
+        sentence = str(sentence)
+        sentence = sentence.lower().strip()
+        sentence = re.sub(r"([?.!,¿])", r" \1 ", sentence)
+        sentence = re.sub(r'[" "]+', " ", sentence)
+        sentence = sentence.strip()
+
+        # Add start and end token
+        sentence = '{} {} {}'.format('<start>', sentence, '<end>')
+        return sentence
+
     def split_envi(self, examples):
-        source_lang = "en"
-        target_lang = "vi"
-        inputs = [str(ex) for ex in examples['en']]
-        targets = [str(ex) for ex in examples['vi']]
+        examples['en'] = examples['en'].map(self.preprocess_sentence)
+        examples['vi'] = examples['vi'].map(self.preprocess_sentence)
+        inputs = [ex for ex in examples['en']]
+        targets = [ex for ex in examples['vi']]
         return inputs, targets
 
     def padding(self, tensor, max_length):
@@ -53,8 +63,15 @@ class Data:
     def convert_tfdataset(self, input_tensor, target_tensor, batch_size):
         dataset = tf.data.Dataset.from_tensor_slices(
             (input_tensor, target_tensor))
-        dataset = dataset.shuffle(10000).batch(batch_size).prefetch(1)
+        dataset = dataset.shuffle(10000).batch(
+            batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
         return dataset
+
+    def split_input_target(self, en, vi):
+        input_en = tf.convert_to_tensor(en, dtype=tf.int64)
+        input_vi = tf.convert_to_tensor(vi[:, :-1], dtype=tf.int64)
+        target_vi = tf.convert_to_tensor(vi[:, 1:], dtype=tf.int64)
+        return (input_en, input_vi), target_vi
 
     def data_process(self, max_input_length, max_target_length, batch_size=32):
         train_dataset_inptensor, train_datasetout_tensor, input_tokenizer, target_tokenizer = self.preprocess(
@@ -63,6 +80,14 @@ class Data:
                                                                              max_input_length, max_target_length, tokenizer_en=input_tokenizer, tokenizer_vi=target_tokenizer)
         test_dataset_inptensor, test_datasetout_tensor, _, _ = self.preprocess(self.test_dataset,
                                                                                max_input_length, max_target_length, tokenizer_en=input_tokenizer, tokenizer_vi=target_tokenizer)
+
+        train_dataset_inptensor, train_datasetout_tensor = self.split_input_target(
+            train_dataset_inptensor, train_datasetout_tensor)
+        val_dataset_inptensor, val_datasetout_tensor = self.split_input_target(val_dataset_inptensor,
+                                                                               val_datasetout_tensor)
+        test_dataset_inptensor, test_datasetout_tensor = self.split_input_target(test_dataset_inptensor,
+                                                                                 test_datasetout_tensor)
+
         train_dataset = self.convert_tfdataset(
             train_dataset_inptensor, train_datasetout_tensor, batch_size)
         val_dataset = self.convert_tfdataset(val_dataset_inptensor,

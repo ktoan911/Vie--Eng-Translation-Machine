@@ -1,6 +1,5 @@
-
-import tensorflow as tf
 from Layers.generator_mask import generate_mask
+import tensorflow as tf
 
 
 class Trainer:
@@ -14,9 +13,12 @@ class Trainer:
             model=self.model, optimizer=self.optimizer)
         self.checkpoint_manager = tf.train.CheckpointManager(
             self.checkpoint, checkpoint_folder, max_to_keep=3)
+        self.checkpoint_path = checkpoint_folder
 
     def cal_acc(self, real, pred):
-        accuracies = tf.equal(real, tf.argmax(pred, axis=2))
+        pred = tf.argmax(pred, axis=2)
+        real = tf.cast(real, pred.dtype)
+        accuracies = tf.equal(real, pred)
 
         mask = tf.math.logical_not(real == 0)
         accuracies = tf.math.logical_and(mask, accuracies)
@@ -35,19 +37,66 @@ class Trainer:
         loss = loss * mask
         return tf.reduce_sum(loss) / tf.reduce_sum(mask)
 
-    def fit(self, train_dataset, val_dataset):
+    # def train_step(self, inp, tar):
+    #     # TODO: Update document
+    #     tar_inp = tar[:, :-1]
+    #     tar_real = tar[:, 1:]
+    #     encoder_padding_mask, decoder_look_ahead_mask, decoder_padding_mask = generate_mask(
+    #         inp, tar_inp)
 
-        # tar_inp = tar[:, :-1]
-        # tar_real = tar[:, 1:]
-        # encoder_padding_mask, decoder_look_ahead_mask, decoder_padding_mask = generate_mask(
-        #     inp, tar_inp)
+    #     with tf.GradientTape() as tape:
+    #         preds = self.model(inp, tar_inp, True, encoder_padding_mask,
+    #                            decoder_look_ahead_mask, decoder_padding_mask)
+    #         d_loss = self.loss_function(tar_real, preds)
+
+    #     # Compute gradients
+    #     grads = tape.gradient(d_loss, self.model.trainable_variables)
+
+    #     # Update weights
+    #     self.optimizer.apply_gradients(
+    #         zip(grads, self.model.trainable_variables))
+
+    #     # Compute metrics
+    #     self.train_loss.update_state(d_loss)
+    #     self.train_accuracy.update_state(self.cal_acc(tar_real, preds))
+
+    #     # return {"loss": self.train_loss.result(), "acc": self.train_accuracy.result()}
+
+    # def fit(self, data):
+    #     print('=============Training Progress================')
+    #     print('----------------Begin--------------------')
+    #     # Loading checkpoint
+    #     if self.checkpoint_manager.latest_checkpoint:
+    #         self.checkpoint.restore(self.checkpoint_manager.latest_checkpoint)
+    #         print('Restored checkpoint manager !')
+
+    #     for epoch in range(self.epochs):
+    #         self.train_loss.reset_states()
+    #         self.train_accuracy.reset_states()
+
+    #         for (batch, (inp, tar)) in enumerate(data):
+    #             self.train_step(inp, tar)
+
+    #             if batch % 50 == 0:
+    #                 print(
+    #                     f'Epoch {epoch + 1} Batch {batch} Loss {self.train_loss.result():.3f} Accuracy {self.train_accuracy.result():.3f}')
+
+    #             if (epoch + 1) % 5 == 0:
+    #                 saved_path = self.checkpoint_manager.save()
+    #                 print('Checkpoint was saved at {}'.format(saved_path))
+    #     print('----------------Done--------------------')
+
+    def fit(self, train_data, val_data):
         print('=============Training Progress================')
         print('----------------Begin--------------------')
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function, metrics=[self.cal_acc])
+        self.model.fit(train_data, validation_data=val_data,
+                       epochs=self.epochs)
 
-        self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset,
-                       callbacks=[self.checkpoint_manager])
+        print('Saving checkpoint ......')
+        self.model.save(self.checkpoint_path, save_format="tf")
+        print('Saved checkpoint at {}'.format(self.checkpoint_path))
         print('----------------Done--------------------')
 
     def predict(self, encoder_input, decoder_input, is_train, max_length, end_token):
