@@ -2,10 +2,11 @@ import tensorflow as tf
 import pandas as pd
 from datasets import load_dataset
 import underthesea
+import pickle
 import re
 
 
-class Data:
+class Data_Preprocessing:
     def __init__(self, train_path, val_path, test_path):
         self.train_dataset = pd.read_csv(train_path, encoding='utf-8')
         self.val_dataset = pd.read_csv(val_path, encoding='utf-8')
@@ -26,7 +27,7 @@ class Data:
         return tensor, tokenizer
 
     def preprocess_sentence(self, sentence):
-        sentence = str(sentence)
+        sentence = str(sentence).replace("_", " ")
         sentence = sentence.lower().strip()
         sentence = re.sub(r"([?.!,¿])", r" \1 ", sentence)
         sentence = re.sub(r'[" "]+', " ", sentence)
@@ -88,6 +89,14 @@ class Data:
         test_dataset_inptensor, test_datasetout_tensor = self.split_input_target(test_dataset_inptensor,
                                                                                  test_datasetout_tensor)
 
+        with open(r'Tokenizer\en_tokenizer.pickle', 'wb') as handle:
+            pickle.dump(input_tokenizer, handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
+
+        with open(r'Tokenizer\vi_tokenizer.pickle', 'wb') as handle:
+            pickle.dump(target_tokenizer, handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
+
         train_dataset = self.convert_tfdataset(
             train_dataset_inptensor, train_datasetout_tensor, batch_size)
         val_dataset = self.convert_tfdataset(val_dataset_inptensor,
@@ -95,3 +104,52 @@ class Data:
         test_dataset = self.convert_tfdataset(test_dataset_inptensor,
                                               test_datasetout_tensor, batch_size)
         return train_dataset, val_dataset, test_dataset, input_tokenizer, target_tokenizer
+
+
+class Data_Predict:
+    def __init__(self, data_path, tokenizer_en_path, tokenizer_vi_path):
+        self.data = self.load_data(data_path)
+        self.tokenizer_en, self.tokenizer_vi = self.load_tokenizer(
+            tokenizer_en_path, tokenizer_vi_path)
+
+    def load_tokenizer(self, tokenizer_en_path, tokenizer_vi_path):
+        with open(tokenizer_en_path, 'rb') as handle:
+            tokenizer_en = pickle.load(handle)
+
+        with open(tokenizer_vi_path, 'rb') as handle:
+            tokenizer_vi = pickle.load(handle)
+        return tokenizer_en, tokenizer_vi
+
+    def load_data(self, data_path):
+        lines_predict = []
+        with open(data_path, 'r') as file:
+            # Đọc từng dòng của file và lưu vào mảng
+            for line in file:
+                # Thêm dòng vào mảng sau khi loại bỏ các ký tự trắng thừa
+                lines_predict.append(line.strip())
+        return lines_predict
+
+    def preprocess_sentence(self, sentence):
+        sentence = str(sentence)
+        sentence = sentence.lower().strip()
+        sentence = re.sub(r"([?.!,¿])", r" \1 ", sentence)
+        sentence = re.sub(r'[" "]+', " ", sentence)
+        sentence = sentence.strip()
+
+        # Add start and end token
+        sentence = '{} {} {}'.format('<start>', sentence, '<end>')
+        return sentence
+
+    def predict_data_preprocessing(self, max_length):
+        lines_predict_preprocessed = [self.preprocess_sentence(
+            sentence) for sentence in self.data]
+        input_en = self.tokenizer_en.texts_to_sequences(
+            lines_predict_preprocessed)
+        input_en = tf.keras.utils.pad_sequences(
+            input_en, padding='post', maxlen=max_length)
+        input_tensor = tf.convert_to_tensor(input_en, dtype=tf.int64)
+        return input_tensor, self.tokenizer_en
+
+    def detokenizer(self, tensor):
+        detokenized_texts = self.tokenizer_vi.sequences_to_texts(tensor)
+        return [sentence.replace('<start>', '').replace('<end>', '').replace('<unk>', '').replace('_', ' ') for sentence in detokenized_texts], self.tokenizer_vi

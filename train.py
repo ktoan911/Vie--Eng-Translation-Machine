@@ -45,7 +45,8 @@ if __name__ == '__main__':
     print('=============Data Processing Progress================')
     print('----------------Begin--------------------')
     print('Loading data ......')
-    dataset = data.Data(args.path_train, args.path_valid, args.path_test)
+    dataset = data.Data_Preprocessing(
+        args.path_train, args.path_valid, args.path_test)
 
     train_dataset, val_dataset, test_dataset, input_tokenizer, target_tokenizer = dataset.data_process(max_input_length=args.max_length_input,
                                                                                                        max_target_length=args.max_length_target,
@@ -55,8 +56,8 @@ if __name__ == '__main__':
     print('----------------------------------------')
     # Training model
 
-    transformer_model = model.Transformer(num_layers=args.num_layers, num_heads=args.num_heads_attention, dff=args.dff, input_vocab_size=len(input_tokenizer.word_index)+1,
-                                          target_vocab_size=len(target_tokenizer.word_index)+1, pe_input=args.max_length_input, pe_target=args.max_length_target, rate=args.dropout_rate)
+    transformer_model = model.Transformer(num_layers=args.num_layers, num_heads=args.num_heads_attention, dff=args.dff, input_vocab_size=len(input_tokenizer.word_index),
+                                          target_vocab_size=len(target_tokenizer.word_index), pe_input=args.max_length_input, pe_target=args.max_length_target, rate=args.dropout_rate)
 
     learning_rate = model.CustomSchedule(args.d_model)
 
@@ -66,10 +67,9 @@ if __name__ == '__main__':
     trainer = trainer.Trainer(
         transformer_model, optimizer, args.epochs, args.checkpoint_path)
 
-    trainer.fit(train_dataset, val_dataset)
+    trainer.fit(train_dataset, val_dataset, test_dataset)
 
     # transformer_encoder.save(args.path, save_format="tf")
 
     # Evaluate the model
-    # test_loss, test_acc = transformer_encoder.evaluate(x_test, y_test)
-    # print(f'Test Loss: {test_loss}, Test Accuracy: {test_acc}')
+    # trainer.evaluate(test_dataset, transformer_model)

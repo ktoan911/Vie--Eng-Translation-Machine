@@ -1,6 +1,5 @@
 import tensorflow as tf
 from argparse import ArgumentParser
-from Transformer_Encoder.encoder import TransformerEncoderPack
 import numpy as np
 import data
 import os
@@ -9,22 +8,18 @@ if __name__ == '__main__':
     parser = ArgumentParser()
 
     # Khai báo tham số cần thiết
-    parser.add_argument("--path-model", default='model', type=str)
-    parser.add_argument("--test-data", default=10000, type=str)
+    parser.add_argument("--path-model", default='model_checkpoint', type=str)
+    parser.add_argument("--path-tokenizer_vie", required=True, type=str)
+    parser.add_argument("--path-tokenizer_en", required=True, type=str)
+    parser.add_argument("--predict-data", required=True, type=str)
     parser.add_argument("--max-length", default=200, type=int)
     home_dir = os.getcwd()
     args = parser.parse_args()
 
-    lines_predict = []
-    with open(args.test_data, 'r') as file:
-        # Đọc từng dòng của file và lưu vào mảng
-        for line in file:
-            # Thêm dòng vào mảng sau khi loại bỏ các ký tự trắng thừa
-            lines_predict.append(line.strip())
+    data_predict = data.Data_Predict(
+        args.predict_data, args.path_tokenizer_en, args.path_tokenizer_vie)
 
-    lines_predict_preprocessed = data.predict_data_preprocessing(
-        lines_predict, args.max_length)
-    model_pretrained = tf.keras.models.load_model('args.path_model')
-    prediction = model_pretrained.predict(np.array(lines_predict_preprocessed))
+    # input_tensor, tokenizer = data_predict.detokenizer(
+    #     [[1, 21, 32, 43, 544, 65, 27]])
 
-    print(prediction)
+    # model_pretrained = tf.keras.models.load_model('args.path_model')
