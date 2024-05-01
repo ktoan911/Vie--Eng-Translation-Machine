@@ -18,8 +18,6 @@ library is part of our project: Building an Translation Machine Model library wi
 
 This project is a Vietnamese - English translation machine using a Transformer model. It aims to provide accurate translations, bridging language barriers and meeting the demand for efficient translation tools.
 
-Slide about your project (if it's available) <--- **FIXME**
-
 ## Architecture Image 
 
 ![image](assets/model_architect.png)
@@ -44,57 +42,62 @@ pip install -r requirements.txt
 ``` 
 
 ## II.  Set up your dataset
+"
+This project utilized [mt_eng_vietnamese Dataset](https://huggingface.co/datasets/mt_eng_vietnamese/viewer/iwslt2015-en-vi/train?p=1)
+```
+from datasets import load_dataset
 
-This project utilized IMDB Tensoflow Dataset
+dataset = load_dataset('mt_eng_vietnamese', 'iwslt2015-en-vi')
 ```
-   (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=vocab_size)
-```
-- References: [NLP](https://github.com/bangoc123/transformer) and [CV](https://github.com/bangoc123/mlp-mixer)
 
 ## III. Training Process
 
 There are some important arguments for the script you should consider when running it:
 
-- `vocab-size`
-- `max-length-input`
-- `embedding-dim`
-- `num-heads-attention`: [3.2.2](https://arxiv.org/pdf/1706.03762.pdf)
-- `dff`: [3.3](https://arxiv.org/pdf/1706.03762.pdf)
-- `num-encoder_layers` : [3.1](https://arxiv.org/pdf/1706.03762.pdf)
-- `d-model`: [3.2.2](https://arxiv.org/pdf/1706.03762.pdf)
-- `batch-size`
-- `epochs` 
-- `dropout-rate`
+### Model config : 
+To configure the model, you can adjust the following parameters:
+
+- `max-length-input`: Maximum length of input sequences. Default is 200.
+- `max-length-target`: Maximum length of target sequences. Default is 200.
+- `embedding-dim`: Dimensionality of the token embeddings. Default is 32.
+- `num-heads-attention`: Number of attention heads in the multi-head attention layers. Default is 2. It is in [3.2.2](https://arxiv.org/pdf/1706.03762.pdf) of the paper
+- `dff`: Dimensionality of the feedforward network. Default is 512. It is in [3.3](https://arxiv.org/pdf/1706.03762.pdf) of the paper
+- `num-layers`: Number of layers in the Transformer model. Default is 2.
+- `d-model`: Dimensionality of the model. Default is 128. It is in [3.2.2](https://arxiv.org/pdf/1706.03762.pdf) of the paper
+- `batch-size`: Batch size for training. Default is 4.
+- `epochs`: Number of epochs for training. Default is 10.
+- `dropout-rate`: Dropout rate for regularization. Default is 0.1.
+
+Make sure to specify the following paths: 
+- `path-train`: Path to the training dataset. This argument is required.
+- `path-valid`: Path to the validation dataset. This argument is required.
+- `path-test`: Path to the testing dataset. This argument is required.
+- `checkpoint-path`: Path to save model checkpoints. Default is 'model_checkpoint'.
 
 Training script:
 
 
 ```python
 
-python train.py --vocab-size ${vocab-size} --embedding-dim ${embedding-dim} --num-heads-attention ${num-heads-attention} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs} --learning-rate ${learning-rate} --dropout-rate ${dropout-rate} --path ${path-to-save-model}
+python train.py --max-length-input ${max-length-input} --max-length-target ${max-length-target} --embedding-dim ${embedding-dim} --num-heads-attention ${num-heads-attention} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs}  --dropout-rate ${dropout-rate} --path-train ${path-train} --path-valid ${path-valid} --path-test ${path-test} --checkpoint-path ${checkpoint-path}
 
 ```
 
-Example:
 
-```python
 
-python train.py --vocab-size 10000 --embedding-dim 32 --num-heads-attention 2 --dff 512 --num-encoder-layers 6 --d-model 128 --batch-size 32 --epochs 10 --learning-rate 0.1 --dropout-rate 0.1 --model 'model'
-
-``` 
-**FIXME**
-
-There are some important arguments for the script you should consider when running it:
-
-- `train-folder`: The folder of training data
-- `valid-folder`: The folder of validation data
-- ...
 
 ## IV. Predict Process
 
 ```bash
-python predict.py --path-model ${model-path} --test-data ${link_to_test_data}
+ppython your_script.py --path-model ${model_checkpoint} --path-tokenizer_vie ${path_to_vietnamese_tokenizer} --path-tokenizer_en ${path_to_english_tokenizer} --predict-data ${path_to_prediction_data} --max-length ${maximum_length}
 ```
+
+### Arguments :
+  - `path-model`: Path to the saved model.
+  - `path-tokenizer_vie`: Path to the tokenizer for Vietnamese. Required.
+  - `path-tokenizer_en`: Path to the tokenizer for English. Required.
+  - `predict-data`: Path to the data for prediction. Required.
+  - `max-length`: Maximum length of prediction strings (default is 200).
 
 ## V. Result and Comparision
 
@@ -126,14 +129,6 @@ Epoch 8/10
 The model's performance improves significantly over three epochs, with loss decreasing and accuracy increasing. 
 
 
-## VI. Running Test
 
-When you want to modify the model, you need to run the test to make sure your change does not affect the whole system.
-
-In the `./folder-name` **(FIXME)** folder please run:
-
-```bash
-pytest
-```
 
 
