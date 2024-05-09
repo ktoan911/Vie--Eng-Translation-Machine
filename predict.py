@@ -12,12 +12,14 @@ if __name__ == '__main__':
     parser.add_argument("--path-tokenizer_vie", required=True, type=str)
     parser.add_argument("--path-tokenizer_en", required=True, type=str)
     parser.add_argument("--predict-data", required=True, type=str)
-    parser.add_argument("--max-length", default=200, type=int)
+    parser.add_argument("--max-length", default=30, type=int)
     home_dir = os.getcwd()
     args = parser.parse_args()
 
     data_predict = data.Data_Predict(
         args.predict_data, args.path_tokenizer_en, args.path_tokenizer_vie)
+
+    print(len(data_predict.tokenizer_vi.word_index))
 
     # input_tensor, tokenizer = data_predict.detokenizer(
     #     [[1, 21, 32, 43, 544, 65, 27]])

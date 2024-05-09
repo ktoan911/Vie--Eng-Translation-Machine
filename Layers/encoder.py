@@ -1,11 +1,11 @@
-import tensorflow as tf
-import Layers.position_encoding as pe
 import Layers.multihead_attention as mha
+import Layers.position_encoding as pe
+import tensorflow as tf
 
 
-def point_wise_feed_forward_network(d_model, dff):
+def point_wise_feed_forward_network(d_model, dff, activation='relu'):
     return tf.keras.Sequential([
-        tf.keras.layers.Dense(dff, activation='relu'),
+        tf.keras.layers.Dense(dff, activation=activation),
         tf.keras.layers.Dense(d_model)
     ])
 
@@ -55,3 +55,21 @@ class EncoderPack(tf.keras.layers.Layer):
             x = self.enc_layers(x, training=training, mask=mask)
 
         return x
+
+
+def test():
+    d_model = 512
+    num_heads = 8
+    num_layers = 6
+    dff = 2048
+    input_vocab_size = 8500
+    target_vocab_size = 8000
+    pe_input = 10000
+    pe_target = 6000
+    rate = 0.1
+    encoder = EncoderPack(num_layers, d_model, num_heads,
+                          dff, input_vocab_size, pe_input, rate)
+    input = tf.random.uniform((64, 62), dtype=tf.int64, minval=0, maxval=200)
+    output = encoder(input, training=False, mask=None)
+    print(output.shape)  # (batch_size, input_seq_len, d_model)
+    return output

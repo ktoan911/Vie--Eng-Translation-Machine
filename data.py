@@ -89,11 +89,11 @@ class Data_Preprocessing:
         test_dataset_inptensor, test_datasetout_tensor = self.split_input_target(test_dataset_inptensor,
                                                                                  test_datasetout_tensor)
 
-        with open(r'Tokenizer\en_tokenizer.pickle', 'wb') as handle:
+        with open(r'Tokenizer\en_tokenizer.pkl', 'wb') as handle:
             pickle.dump(input_tokenizer, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 
-        with open(r'Tokenizer\vi_tokenizer.pickle', 'wb') as handle:
+        with open(r'Tokenizer\vi_tokenizer.pkl', 'wb') as handle:
             pickle.dump(target_tokenizer, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 

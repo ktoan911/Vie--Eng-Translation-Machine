@@ -3,12 +3,12 @@ import tensorflow as tf
 
 def scaled_dot_product_attention(q, k, v, mask):
     # print(q.shape, k.shape)
-    QKV = (1/tf.sqrt(tf.cast(tf.shape(k)
-           [-1], dtype=tf.float32))) * tf.matmul(q, k, transpose_b=True)
+    QK = (1/tf.sqrt(tf.cast(tf.shape(k)
+                            [-1], dtype=tf.float32))) * tf.matmul(q, k, transpose_b=True)
     # print("shape qkv", QKV.shape)
     if mask is not None:
-        QKV += (mask * -1e30)
-    output = tf.matmul(tf.nn.softmax(QKV, axis=-1), v)
+        QK += (mask * -1e30)
+    output = tf.matmul(tf.nn.softmax(QK, axis=-1), v)
     return output
 
 
@@ -28,16 +28,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
         return tf.transpose(x, perm=[0, 2, 1, 3])
 
-    def __call__(self, v, k, q, mask):
-        # Chia ma trận Q, K, V thành các phần nhỏ cho multi-head attention
+    def call(self, q, k, v, mask):
         batch_size = tf.shape(q)[0]
         v = self.split_heads(self.wv(v), batch_size)
         k = self.split_heads(self.wk(k), batch_size)
         q = self.split_heads(self.wq(q), batch_size)
 
-        # self-attention
         output = scaled_dot_product_attention(q, k, v, mask)  # (1,8,60,16)
-        # Xếp lại chiều của ma trận sao cho đúng định dạng ban đầu
         output = tf.reshape(tf.transpose(
             output, perm=[0, 2, 1, 3]), (batch_size, -1, self.d_model))
         output = self.dense(output)
