@@ -7,6 +7,7 @@ import Layers.encoder as enc
 class DecoderLayer(tf.keras.layers.Layer):
     def __init__(self, d_model, num_heads, dff, rate=0.1):
         super(DecoderLayer, self).__init__()
+        self.d_model = d_model
         self.masked_mha = mha.MultiHeadAttention(d_model, num_heads)
         self.pad_mha = mha.MultiHeadAttention(d_model, num_heads)
         self.ffn = enc.point_wise_feed_forward_network(d_model, dff)
@@ -36,40 +37,23 @@ class DecoderLayer(tf.keras.layers.Layer):
 class DecoderPack(tf.keras.layers.Layer):
     def __init__(self, num_decoder_layers, d_model, num_heads, dff, target_vocab_size, maximum_position_encoding, rate=0.1):
         super(DecoderPack, self).__init__()
+        self.d_model = d_model
         self.num_decoder_layers = num_decoder_layers
         self.embedding = tf.keras.layers.Embedding(
             target_vocab_size, d_model, input_length=maximum_position_encoding)
         self.pos_encoding = pe.positional_encoding(
             maximum_position_encoding, d_model)
-        self.dec_layer = DecoderLayer(d_model, num_heads, dff, rate)
+        self.dec_layers = [DecoderLayer(d_model, num_heads, dff, rate) for _ in range(self.num_decoder_layers)]
         self.dropout = tf.keras.layers.Dropout(rate)
 
     def call(self, x, enc_output, training, look_ahead_mask, padding_mask):
         x = self.embedding(x)
+        x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
         x += self.pos_encoding[:, :tf.shape(x)[1], :]
         x = self.dropout(x, training=training)
-        for _ in range(self.num_decoder_layers):
-            x = self.dec_layer(x, enc_output, training=training,
-                               padding_mask=padding_mask, look_ahead_mask=look_ahead_mask)
+
+        for i, dec_layer in enumerate(self.dec_layers):
+            x = dec_layer(x, enc_output, training=training, padding_mask=padding_mask, look_ahead_mask=look_ahead_mask)
+            # print(f"After DecoderLayer {i+1}:", x.shape)
 
         return x
-
-
-def test():
-    d_model = 512
-    num_heads = 8
-    dff = 2048
-    target_vocab_size = 8000
-    maximum_position_encoding = 5000
-    num_decoder_layers = 2
-    rate = 0.1
-    decoder = DecoderPack(num_decoder_layers, d_model, num_heads, dff,
-                          target_vocab_size, maximum_position_encoding, rate)
-    x = tf.random.uniform((64, 60), dtype=tf.int64, minval=0, maxval=200)
-    enc_output = tf.random.uniform((64, 60, 512))
-    look_ahead_mask = tf.random.uniform((64, 1, 1, 60))
-    padding_mask = tf.random.uniform((64, 1, 1, 60))
-    out = decoder(x, enc_output, training=True,
-                  look_ahead_mask=look_ahead_mask, padding_mask=padding_mask)
-
-    print(out.shape)

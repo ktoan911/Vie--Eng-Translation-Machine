@@ -20,6 +20,13 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
 
         return tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
 
+    def get_config(self):
+        config = {
+            'd_model': self.d_model,
+            'warmup_steps': self.warmup_steps,
+        }
+        return config
+
 
 class Transformer(tf.keras.Model):
     def __init__(self, num_layers, d_model, num_heads, dff, input_vocab_size, target_vocab_size, pe_input, pe_target, rate=0.1):
@@ -33,7 +40,8 @@ class Transformer(tf.keras.Model):
             target_vocab_size)
 
     def call(self, inputs, training=True):
-        inp, out = inputs
+        inp = inputs['input_en']
+        out = inputs['input_vi']
         encoder_padding_mask, decoder_look_ahead_mask, decoder_padding_mask = gm.generate_mask(
             inp, out)
         enc_output = self.encoder(
@@ -42,23 +50,3 @@ class Transformer(tf.keras.Model):
             out, enc_output, training=training, look_ahead_mask=decoder_look_ahead_mask, padding_mask=decoder_padding_mask)
         output = self.final_layer(dec_output)
         return output
-
-
-# def test():
-#     d_model = 512
-#     num_heads = 8
-#     num_layers = 6
-#     dff = 2048
-#     input_vocab_size = 8500
-#     target_vocab_size = 8000
-#     pe_input = 10000
-#     pe_target = 6000
-#     transformer = Transformer(num_layers, d_model, num_heads, dff,
-#                               input_vocab_size, target_vocab_size, pe_input, pe_target)
-#     result = transformer(inputs=(tf.random.uniform(
-#         (64, 38)), tf.random.uniform((64, 37))))
-
-#     print(result.shape)
-
-
-# test()

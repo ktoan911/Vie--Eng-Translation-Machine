@@ -5,8 +5,13 @@
 # Byte-compiled / optimized files
 */__pycache__/
 __pycache__
+Arrow_file/
+
 # Distribution / packaging
 test.py
 test1.py
 predict.txt
 tempCodeRunnerFile.py
+init_data.py
+path_predict.txt
+model.weights.h5

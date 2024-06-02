@@ -1,4 +1,4 @@
-# Vie-Eng Translation Machine
+# Eng-Vie Translation Machine
 Authors:
 - Github: [ktoan911](https://github.com/ktoan911) 
 - Email: khanhtoan.forwork@gmail.com 

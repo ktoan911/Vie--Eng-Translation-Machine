@@ -34,3 +34,4 @@ def generate_mask(inp, targ):
         decoder_look_ahead_mask, decoder_inp_padding_mask)
 
     return encoder_padding_mask, decoder_look_ahead_mask, decoder_padding_mask
+
