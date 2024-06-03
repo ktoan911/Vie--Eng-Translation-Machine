@@ -254,4 +254,4 @@ class Data_Predict:
         input_en = tf.keras.preprocessing.sequence.pad_sequences(
             input_en, padding='post', maxlen=max_length, truncating='post')
         input_tensor = tf.convert_to_tensor(input_en, dtype=tf.int64)
-        return input_tensor
+        return self.data, input_tensor  # data gốc và data sau khi xử lí

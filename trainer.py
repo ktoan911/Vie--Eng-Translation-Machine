@@ -107,7 +107,7 @@ class Trainer:
                            loss=self.loss_function, metrics=[self.cal_acc])
         self.model.load_weights(self.model_path)
         print('-----------------------------------------')
-        print('Predicting ......')
+        print('Translating ......')
 
         results = []
 

@@ -7,27 +7,15 @@ import trainer
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-
-    # parser.add_argument("--max-length-input", default=64, type=int)
-    # parser.add_argument("--max-length-target", default=64, type=int)
-    # parser.add_argument("--num-heads-attention", default=1, type=int)
-    # parser.add_argument("--vocab-size", default=20000, type=int)
-    # parser.add_argument("--dff", default=2, type=int)
-    # parser.add_argument("--num-layers", default=1, type=int)
-    # parser.add_argument("--d-model", default=2, type=int)
-    # parser.add_argument("--batch-size", default=512, type=int)
-    # parser.add_argument("--epochs", default=10, type=int)
-    # parser.add_argument("--dropout-rate", default=0.1, type=float)
-
     # Khai báo tham số cần thiết
     parser.add_argument("--max-length-input", default=64, type=int)
     parser.add_argument("--max-length-target", default=64, type=int)
-    parser.add_argument("--num-heads-attention", default=1, type=int)
+    parser.add_argument("--num-heads-attention", default=8, type=int)
     parser.add_argument("--vocab-size", default=20000, type=int)
-    parser.add_argument("--dff", default=2, type=int)
-    parser.add_argument("--num-layers", default=1, type=int)
-    parser.add_argument("--d-model", default=2, type=int)
-    parser.add_argument("--batch-size", default=512, type=int)
+    parser.add_argument("--dff", default=512, type=int)
+    parser.add_argument("--num-layers", default=6, type=int)
+    parser.add_argument("--d-model", default=512, type=int)
+    parser.add_argument("--batch-size", default=64, type=int)
     parser.add_argument("--epochs", default=10, type=int)
     parser.add_argument("--dropout-rate", default=0.1, type=float)
     parser.add_argument("--path-token-en", required=True, type=str)
@@ -45,7 +33,7 @@ if __name__ == '__main__':
     input_tokenizer, target_tokenizer = data_predict.get_tokenizer()
 
     # get encoder
-    encoder_input = data_predict.predict_data_preprocessing(
+    raw_input, encoder_input = data_predict.predict_data_preprocessing(
         args.max_length_input)
 
     # get start and end token of decoder
@@ -73,4 +61,9 @@ if __name__ == '__main__':
 
     result = trainer_.predict(
         encoder_input, decoder_input, False, args.max_length_target)
-    print(result)
+
+    for i in range(len(result)):
+        print('------------------------------------------')
+        print('English:', raw_input[i])
+        print('Vietnamese:', result[i])
+        print('------------------------------------------')
